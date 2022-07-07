@@ -9,10 +9,10 @@
 	// Email Credentials
 	define('SMTP_HOST', 'smtp.gmail.com');
 	define('SMTP_PORT', 465);
-	define('SMTP_USERNAME', 'stecgobmich@gmail.com');
-	define('SMTP_PASSWORD', 'stec2127');
-	define('SMTP_FROM', 'stecgobmich@gmail.com');
-	define('SMTP_FROM_NAME', 'ellen@example.com');
+	define('SMTP_USERNAME', '@gmail.com');
+	define('SMTP_PASSWORD', '');
+	define('SMTP_FROM', '@gmail.com');
+	define('SMTP_FROM_NAME', 'ellen@.com');
 
 	// Global Variables
 	define('MAX_LOGIN_ATTEMPTS_PER_HOUR', 5);
