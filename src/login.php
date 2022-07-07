@@ -20,7 +20,7 @@
 							// Log user in
 							$_SESSION['loggedin'] = true;
 							$_SESSION['userID'] = $user['id'];
-							$_SESSION['miupp'] = $user['upp'];
+							$_SESSION['dependencia'] = $user['upp'];
 							$_SESSION['cargo'] = $user['cargo'];
 							$_SESSION['name'] = $user['name'];
 							$_SESSION['nivel'] = $user['nivel'];

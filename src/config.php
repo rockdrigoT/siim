@@ -2,9 +2,9 @@
 
 	// Database Credentials
 	define('DB_HOST', 'localhost');
-	define('DB_DATABASE', 'siim');
-	define('DB_USERNAME', 'da_admin');
-	define('DB_PASSWORD', 'd7LUdPKBfe');
+	define('DB_DATABASE', 'acuerdos');
+	define('DB_USERNAME', 'root');
+	define('DB_PASSWORD', 'root');
 
 	// Email Credentials
 	define('SMTP_HOST', 'smtp.gmail.com');

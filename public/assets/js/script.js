@@ -28,9 +28,9 @@ function request(url, data, callback) {
   xhr.send(formdata);
 }
 
-// logout.php
+// index.php
 function logout() {
-  request("../../src/logout.php", false, function (data) {
+  request("php/logout.php", false, function (data) {
     if (data === "0") {
       window.location = "login.php";
     }
@@ -38,7 +38,7 @@ function logout() {
 }
 
 function deleteAccount() {
-  request("../src/deleteAccount.php", false, function (data) {
+  request("php/deleteAccount.php", false, function (data) {
     document.getElementById("errs").innerHTML = "";
     var transition = document.getElementById("errs").style.transition;
     document.getElementById("errs").style.transition = "none";
@@ -76,7 +76,7 @@ function deleteAccount() {
 
 // login.php
 function login() {
-  request("../src/login.php", "#loginForm", function (data) {
+  request("php/login.php", "#loginForm", function (data) {
     document.getElementById("errs").innerHTML = "";
     var transition = document.getElementById("errs").style.transition;
     document.getElementById("errs").style.transition = "none";
@@ -114,7 +114,7 @@ function login() {
 
 // register.php
 function register() {
-  request("../src/register.php", "#registerForm", function (data) {
+  request("php/register.php", "#registerForm", function (data) {
     document.getElementById("errs").innerHTML = "";
     var transition = document.getElementById("errs").style.transition;
     document.getElementById("errs").style.transition = "none";
@@ -147,7 +147,7 @@ function register() {
             break;
           case 4:
             document.getElementById("errs").innerHTML +=
-              '<div class="err">Password debe contener: <ul><li>Al menos 8 caracteres</li> <li>Al menos un caracter minúscula</li> <li>Al menos un caracter mayúscula</li> <li>Al menos un número</li> <li>Al menos un caracter especial(~?!@#$%^&*)</li></ul></div>';
+              '<div class="err">Password debe contener: <ul><li>Al menos 8 caracteres</li><li>Al menos un caracter minúscula</li><li>Al menos un caracter mayúscula</li><li>Al menos un número/li><li>Al menos un caracter especial(~?!@#$%^&*)</li></ul></div>';
             break;
           case 5:
             document.getElementById("errs").innerHTML +=
@@ -163,7 +163,7 @@ function register() {
             break;
           case 8:
             document.getElementById("errs").innerHTML +=
-              '<div class="err">Error en conexión con la Base de Datos. ERROR 8</div>';
+              '<div class="err">Error en conexión con la Base de Datos.</div>';
             break;
           case 9:
             document.getElementById("errs").innerHTML +=
@@ -171,7 +171,7 @@ function register() {
             break;
           case 10:
             document.getElementById("errs").innerHTML +=
-              '<div class="err">Hemos enviado un correo de confirmación, desde ahí podrás acceder ¡Gracias!.</div>';
+              '<div class="err">Hemos recibido tu solicitud de usuario, verificaremos tu identidad y enviaremos un correo de confirmación, gracias.</div>';
             break;
           case 11:
             document.getElementById("errs").innerHTML +=
@@ -200,7 +200,7 @@ function register() {
       }
     } catch (e) {
       document.getElementById("errs").innerHTML =
-        '<div class="err">Un error un desconocido ha sucedido - no iniciando conexión.</div>';
+        '<div class="err">Un error un desconocido ha sucedido.</div>';
     }
     setTimeout(function () {
       document.getElementById("errs").style.transition = transition;
@@ -211,7 +211,7 @@ function register() {
 
 // validateEmail.php
 function sendValidateEmailRequest() {
-  request("../src/sendValidationEmail.php", "#validateEmailForm", function (data) {
+  request("php/sendValidationEmail.php", "#validateEmailForm", function (data) {
     document.getElementById("errs").innerHTML = "";
     var transition = document.getElementById("errs").style.transition;
     document.getElementById("errs").style.transition = "none";
@@ -261,7 +261,7 @@ function sendValidateEmailRequest() {
 // resetPassword.php
 function passwordResetRequest() {
   request(
-    "../src/passwordResetRequest.php",
+    "php/passwordResetRequest.php",
     "#resetPasswordForm",
     function (data) {
       document.getElementById("errs").innerHTML = "";
@@ -311,7 +311,7 @@ function passwordResetRequest() {
   );
 }
 function changePassword() {
-  request("../src/changePassword.php", "#changePasswordForm", function (data) {
+  request("php/changePassword.php", "#changePasswordForm", function (data) {
     document.getElementById("errs").innerHTML = "";
     var transition = document.getElementById("errs").style.transition;
     document.getElementById("errs").style.transition = "none";

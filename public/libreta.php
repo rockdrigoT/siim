@@ -2,14 +2,23 @@
 require_once '../src/utils.php';
 include  '../src/verificaUser.php'; 
 include ("../classes/consultas.php");
-
 $cnx = new consultasAcuerdos();  
 $miUpp = $_SESSION['dependencia'];
+$libretaActual = $_GET['libreta'];
 
 $denominacionUPP = $cnx->EncuentraUpp($miUpp);
 while ($row=mysqli_fetch_object($denominacionUPP)){
   $nombreMiUpp=$row->denominacion;
 }
+
+$consultaLibreta = $cnx->abreLibreta($libretaActual);
+while ($row=mysqli_fetch_object($consultaLibreta)){
+  $libretaAutor=$row->autor;
+  $libretaNombre=$row->nombre;
+  $libretaDescripcion=$row->descripcion;
+  $libretaFechaCreacion=$row->fechaRegistro;
+}
+
 ?>
 
 <!doctype html>
@@ -56,11 +65,11 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
 
     <div class="container-fluid">
         <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.php">
+                            <a class="nav-link" aria-current="page" href="index.php">
                                 <span data-feather="home"></span>
                                 <i class="bi bi-inbox-fill"></i> Bandeja de entrada
                             </a>
@@ -102,58 +111,19 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
 
                     <?php
         if($miUpp == 3){
-          echo "<button style='margin:0 0 0 10px' type='button' class='btn btn-gob' data-bs-toggle='modal' data-bs-target='#nuevoAcuerdo' data-bs-whatever='acuerdo'> <i class='bi bi-plus-square-fill'></i> Agregar nuevo acuerdo</button>";
+          echo "<button style='margin:0 0 0 10px' type='button' class='btn btn-primary btn-sm' data-bs-toggle='modal' data-bs-target='#nuevoAcuerdo' data-bs-whatever='acuerdo'> <i class='bi bi-plus-square-fill'></i> Agregar nuevo acuerdo</button>";
         }
         ?>
 
                 </div>
+                
+                <!-- INICIA LIBRETA -->
+                <div class="d-flex justify-content-between">
+                <div class="mb-3"><span class="badge bg-success" style="font-size: 1.5em;"><b>Libreta: </b><?=$libretaNombre?></span> | <b>Autor:</b><?=$libretaAutor?></div>
+                <div><a href="borrarLibreta.php?libreta=<?=$libretaActual?>" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> eliminar libreta</a></div>
+                </div>
+
                 <div class='row'>
-                    <div class='col-11 m-4'>
-
-                        <!-- CONDICIONAR QUE SOLO UPP 3 PUEDA VER EL MENU -->
-                        <?php
-                      if($miUpp == '3'){
-                        ?>
-                        <form action='' method="post">
-                            <select name='muestraUpp' id='muestraUpp' class='form-select' onchange="this.form.submit()">
-                                <option>Selecciona una dependencia...</option>
-                                <option value="">Todos</option>
-                                <?php
-                        $lstUpps = $cnx->EnlistarUPP();
-                        while ($row=mysqli_fetch_object($lstUpps)){
-                          $numeroUpp=$row->upp;
-                          $denominacionUpp=$row->denominacion;
-                          echo "<option value='".$numeroUpp."'>".$denominacionUpp."</option>";
-                        }
-                        ?>
-                            </select>
-                        </form>
-                    </div>
-
-                    <!-- LETRERO -->
-                    <div>
-                        <h4>Mostrando datos de
-                            <?php
-            if(!empty($_POST['muestraUpp'])){
-              $nombreUppResponsable2 = $cnx->EncuentraUpp($_POST['muestraUpp']);
-              while ($row3=mysqli_fetch_object($nombreUppResponsable2)){
-                $denominacionUppResponsable3=$row3->denominacion;
-                echo $denominacionUppResponsable3;
-              }
-            }else{
-              $mostrarTodos = true;
-              echo "todos";
-            }
-             ?>
-                        </h4>
-
-                        <?php
-              }
-            ?>
-
-                    </div>
-
-
                     <!-- //NUEVOS ACUERDOS -->
                     <div class='col-4'>
                         <div class='text-center text-center bg-secondary text-light'
@@ -163,18 +133,8 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                         <?php 
             
 
-            if($miUpp == 3){
-              if($mostrarTodos == true){
-                $acuerdos2 = $cnx->listarTodosAcuerdosNuevosUPP();
-              } else {
-                $uppMostrar = $_POST['muestraUpp'];
-                $acuerdos2 = $cnx->listarTodosAcuerdosNuevosUPPFiltrado($uppMostrar);
-              }
-            }else{
-              $acuerdos2 = $cnx->listarTodosAcuerdosNuevosUPPFiltrado($miUpp);
-            }
-
-            while ($row=mysqli_fetch_object($acuerdos2)){
+            $LitarAcuerdosLibreta = $cnx->listarTodosAcuerdosLibreta($libretaActual);
+            while ($row=mysqli_fetch_object($LitarAcuerdosLibreta)){
             $idAcuerdo=$row->idAcuerdo;
             $uppResponsable=$row->uppResponsable;
 
@@ -193,13 +153,13 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
             <div class='card-body'>
             <p style='padding:3px; border-bottom: 1px gray dashed'><b style='color: #900C3F'>".$siglasUppResponsable." </b>| ".$acuerdo."</p>
             <p style='padding:2px 5px' class='d-flex justify-content-between'>
-            <a href='acuerdoBorrar.php?idAcuerdo=".$idAcuerdo."' class='btn btn-sm btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Elminar acuerdo'><i class='bi bi-trash'></i></a>
+            <a href='acuerdoBorrar.php?idAcuerdo=".$idAcuerdo."&libreta=".$libretaActual."' class='btn btn-sm btn-danger' data-bs-toggle='tooltip' data-bs-placement='top' title='Elminar acuerdo'><i class='bi bi-trash'></i></a>
 
             <button style='margin:0 0 0 1px' type='button' class='btn btn-sm btn-primary' data-bs-toggle='modal' data-bs-target='#agregarColaborador' data-bs-whatever='".$idAcuerdo."'><i class='bi bi-person-plus-fill'></i></button>
             
             Fecha registro:<b> <i class='bi bi-calendar-event'></i>  ".$fechaRegistro."</b>
-            <a href='acuerdoProceso.php?idAcuerdo=".$idAcuerdo."' class='btn btn-sm btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Enviar a proceso' ><i class='bi bi-gear'></i></a>
-            <a href='acuerdoTerminado.php?idAcuerdo=".$idAcuerdo."' class='btn btn-sm btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Terminar acuerdo'><i class='bi bi-check-square-fill'></i></a></p>
+            <a href='acuerdoProceso.php?idAcuerdo=".$idAcuerdo."&libreta=".$libretaActual."' class='btn btn-sm btn-info' data-bs-toggle='tooltip' data-bs-placement='top' title='Enviar a proceso' ><i class='bi bi-gear'></i></a>
+            <a href='acuerdoTerminado.php?idAcuerdo=".$idAcuerdo."&libreta=".$libretaActual."' class='btn btn-sm btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Terminar acuerdo'><i class='bi bi-check-square-fill'></i></a></p>
             <div class='card-footer'>";
               $colaboradores=$cnx->seleccionaUppColaboradoras($idAcuerdo);
               while ($row3=mysqli_fetch_object($colaboradores)){
@@ -208,7 +168,7 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                 while ($row4=mysqli_fetch_object($encuentraNombreUppColaboradora))
                   {
                   $siglasUppColaboradora=$row4->siglas;
-                  echo "<div style='display:inline-block'><span class='badge rounded-pill bg-info text-light m-1'><a href='eliminarColaborador.php?idAcuerdo=".$idAcuerdo."&uppColaboradora=".$uppColaboradora."' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar colaborador'><i class='bi bi-x-circle-fill'></i></a> ".$siglasUppColaboradora."</span></div>";
+                  echo "<div style='display:inline-block'><span class='badge rounded-pill bg-info text-light m-1'><a href='eliminarColaborador.php?idAcuerdo=".$idAcuerdo."&uppColaboradora=".$uppColaboradora."&libreta=".$libretaActual."' data-bs-toggle='tooltip' data-bs-placement='top' title='Eliminar colaborador'><i class='bi bi-x-circle-fill'></i></a> ".$siglasUppColaboradora."</span></div>";
                   }
               }
             echo "</div>
@@ -262,24 +222,12 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                     <div class='col-4'>
                         <div class='text-center text-center bg-info text-light'
                             style='border-radius: 15px 15px 0 0; padding:5px'>
-                            <h4>Proceso <i class='bi bi-gear'></i></h4>
+                            <h4>Proceso<i class='bi bi-gear'></i></h4>
                         </div>
                         <?php
-
-            if($miUpp == 3){
-              if($mostrarTodos == true){
-                $acuerdos2 = $cnx->listarTodosAcuerdosProcesoUPP();
-              }else{
-                $uppMostrar = $_POST['muestraUpp'];
-                $acuerdos2 = $cnx->listarTodosAcuerdosProcesoUPPFiltrado($uppMostrar);
-              }
-            }else{
-              $acuerdos2 = $cnx->listarTodosAcuerdosProcesoUPPFiltrado($miUpp);
-            }
-
             
-            
-            while ($row=mysqli_fetch_object($acuerdos2)){
+            $AcuerdoProcesoLibreta = $cnx->listarTodosAcuerdosProcesoUPPLibreta($libretaActual);
+            while ($row=mysqli_fetch_object($AcuerdoProcesoLibreta)){
             $idAcuerdo=$row->idAcuerdo;
             $uppResponsable=$row->uppResponsable;
             $nombreUppResponsable = $cnx->EncuentraUpp($uppResponsable);
@@ -312,8 +260,8 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
               }
             echo "</p>
             <p style='padding:3px; border-top: 1px gray dashed'>
-            <button style='margin:0 0 0 10px' type='button' class='btn btn-sm btn-secondary' data-bs-toggle='modal' data-bs-target='#comentarioNuevo' data-bs-whatever='".$idAcuerdo."'><i class='bi bi-chat-dots-fill'></i> comentar</button>
-            <a href='acuerdoTerminado.php?idAcuerdo=".$idAcuerdo."' class='btn btn-sm btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Terminar acuerdo' ><i class='bi bi-check-square-fill'></i></a></p>
+            <button style='margin:0 0 0 10px' type='button' class='btn btn-sm btn-secondary' data-bs-toggle='modal' data-bs-target='#comentarioNuevo' data-bs-whatever='".$idAcuerdo."'><i class='bi bi-chat-square-quote'></i></button>
+            <a href='acuerdoTerminado.php?idAcuerdo=".$idAcuerdo."&libreta=".$libretaActual."' class='btn btn-sm btn-success' data-bs-toggle='tooltip' data-bs-placement='top' title='Terminar acuerdo' ><i class='bi bi-check-square-fill'></i></a></p>
             <div class='card-footer'>";
               $colaboradores=$cnx->seleccionaUppColaboradoras($idAcuerdo);
               while ($row3=mysqli_fetch_object($colaboradores)){
@@ -328,7 +276,7 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
             echo "</div>
             </div>
             </div>";
-            } 
+            }
             ?>
 
                         <!-- MUESTRA COLABORACIONES ACUERDOS EN PROCESO -->
@@ -396,20 +344,10 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                         </div>
                         <?php
 
-            if($miUpp == 3){
-              if($mostrarTodos == true){
-                $acuerdos2 = $cnx->listarTodosAcuerdosAtendidosUPP();
-              }else{
-                $uppMostrar = $_POST['muestraUpp'];
-                $acuerdos2 = $cnx->listarTodosAcuerdosAtendidosUPPFiltrado($uppMostrar);
-              }
-            }else{
-              $acuerdos2 = $cnx->listarTodosAcuerdosAtendidosUPPFiltrado($miUpp);
-            }
-
-
           
-            while ($row=mysqli_fetch_object($acuerdos2)){
+
+            $acuerdosAtendidosLibreta = $cnx->listarTodosAcuerdosAtendidosLibreta($libretaActual);
+            while ($row=mysqli_fetch_object($acuerdosAtendidosLibreta)){
             $idAcuerdo=$row->idAcuerdo;
             $uppResponsable=$row->uppResponsable;
               $nombreUppResponsable = $cnx->EncuentraUpp($uppResponsable);
@@ -447,7 +385,7 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
             
             echo "
             <p style='padding:3px; border-top: 1px gray dashed'>
-            <a href='acuerdoArchivar.php?idAcuerdo=".$idAcuerdo."' class='btn btn-sm btn-warning' data-bs-toggle='tooltip' data-bs-placement='top' title='Archivar acuerdo'><i class='bi bi-inboxes-fill'></i></a></p>
+            <a href='acuerdoArchivar.php?idAcuerdo=".$idAcuerdo."&libreta=".$libretaActual."' class='btn btn-sm btn-warning' data-bs-toggle='tooltip' data-bs-placement='top' title='Archivar acuerdo'><i class='bi bi-inboxes-fill'></i></a></p>
             <div class='card-footer'>";
               $colaboradores=$cnx->seleccionaUppColaboradoras($idAcuerdo);
               while ($row3=mysqli_fetch_object($colaboradores)){
@@ -516,8 +454,9 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                                 </div>
                                 <div class="modal-body">
                                     <form action="guardarAcuerdoNuevo.php" method="post">
-                                      <input type="hidden" name="libreta" id="libreta" value="0" />
+                                    <input type="hidden" name="libreta" id="libreta" value="<?=$libretaActual?>" />
                                       <input type="hidden" name="autor" id="autor" value="<?=$_SESSION['name']?>" />
+
                                         <div class="mb-3">
                                             <label for="message-text" class="col-form-label">Descripción del
                                                 acuerdo:</label>
@@ -607,6 +546,8 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                         </div>
                     </div>
 
+
+
                     <!-- Agregar COLABORADOR  Modal -->
                     <div class="modal fade" id="agregarColaborador" tabindex="-1" aria-labelledby="faseModallLabel"
                         aria-hidden="true">
@@ -619,6 +560,8 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
                                 </div>
                                 <div class="modal-body">
                                     <form action="agregarColaborador.php" method="post">
+                                    <input type="hidden" name="libreta" id="libreta" value="<?=$libretaActual?>" />
+                                      <input type="hidden" name="autor" id="autor" value="<?=$_SESSION['name']?>" />
                                         <input type="hidden" name='idAcuerdo' id='idAcuerdo' value='<?= $idAcuerdo ?>'>
                                         <div class="mb-3">
                                             <label for="message-text" class="col-form-label">Selecciona una upp
@@ -692,7 +635,7 @@ while ($row=mysqli_fetch_object($denominacionUPP)){
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
-    <script src="./assets/js/script.js"></script>
+    <script src="../assets/js/script.js"></script>
     <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {

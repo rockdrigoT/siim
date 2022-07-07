@@ -1,5 +1,5 @@
 <?php 
-	require_once '../../src/utils.php';
+	require_once '../src/utils.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,11 +13,9 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
-    <link href="../assets/css/obrasxcop.css" rel="stylesheet" />
     <style>
         body, html {
-            background-image: url('../assets/imgs/bg.jpg');
+            background-image: url('./assets/imgs/bg.jpg');
             background-size: cover;
             height: 100%;
         }
@@ -25,6 +23,7 @@
         .login{
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 15px;
+            margin-top: 10px;
         }
         .inputblock{
             color: #fff;
@@ -46,7 +45,7 @@
             text-align: center;
         }
     </style>
-    <title>SIIM_V1.2</title>
+    <title>Acuerdos DGEM</title>
 </head>
 
 <body>
@@ -55,9 +54,7 @@
 
             <div class="col-12 login">
                 <div class='letreroLogin' style="color:#fff; padding:10px;">
-                <img src="../assets/imgs/escudo_st.png" style="width:100%;" />
-                    <h3><b>SIIM_V1.2</b></h3>
-                    <p>Sistema de Información Integral Municipal</p>
+                    <p class="text-center">Seguimiento Acuerdos Gabinete</p>
                 </div>
                 
                 <form id="loginForm" class="loginBox">
@@ -96,7 +93,7 @@
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
     </script>
 
-    <script src="../assets/js/formularios.js"></script>
+    <script src="./assets/js/formularios.js"></script>
 </body>
 
 </html>
